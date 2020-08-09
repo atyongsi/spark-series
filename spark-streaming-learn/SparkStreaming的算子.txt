@@ -1,0 +1,45 @@
+DStream是Spark-Streaming的基本抽象，表示连续的数据流。
+DStream内部是由一系列连续的RDDs组成。
+DStream有两大类算子：transformations算子、output算子
+
+transformations算子:
+一部分用来操作DStream(个人理解其实就是操作RDDs)
+map,flatMap,filter,repartition,union,count,reduce,countByValue,reduceByKey,join,cogroup,transform,updateStateByKey
+
+一部分用来操作窗口(Windows Operations)
+window,countByWindow,reduceByWindow,reduceByKeyAndWindow,countByValueAndWindow
+
+output算子：(类似RDD操作中的Action算子)
+print,saveAsTextFiles,savaAsObjectFiles,saveAsHadoopFiles,foreachRDD
+
+----------------------- transform算子  ------------------------------
+map:通过函数func传递源DStream的每个元素，返回一个新的DStream。
+flatmap:类似于map，但是每个输入项可以映射到0或多个输出项。
+filter:通过只选择func返回true的源DStream的记录来返回一个新的DStream。
+repartition:重分区,通过创建或多或少的分区来更改此DStream中的并行度级别。
+union:返回一个新的DStream，它包含源DStream和其他DStream中的元素的联合.
+count:通过计算源DStream的每个RDD中的元素数量，返回一个新的单元素RDD DStream。
+reduce:使用func函数(函数接受两个参数并返回一个参数)聚合源DStream的每个RDD中的元素，从而返回单元素RDDs的新DStream。这个函数应该是结合律和交换律的，这样才能并行计算。
+countByValue:当对K类型的元素的DStream调用时，返回一个新的(K, Long)对的DStream，其中每个键的值是它在源DStream的每个RDD中的频率。
+reduceByKey:当对(K, V)对的DStream调用时，返回一个新的(K, V)对的DStream，其中每个键的值使用给定的reduce函数进行聚合。注意:默认情况下，这将使用Spark的默认并行任务数量(本地模式为2，在集群模式下，该数量由config属性Spark .default.parallelism决定)来进行分组。我们可以传递一个可选的numTasks参数来设置不同数量的任务。
+join:当调用两个(K, V)和(K, W)对的DStream时，返回一个新的(K， (V, W))对的DStream，其中包含每个Key的所有元素对。
+cogroup:当调用(K, V)和(K, W)对的DStream时，返回一个新的(K, Seq[V]， Seq[W])元组DStream。
+transform:通过将RDD-to-RDD函数应用于源DStream的每个RDD，返回一个新的DStream。它可以用于应用DStream API中没有公开的任何RDD操作。例如将数据流中的每个批处理与另一个数据集连接的功能并不直接在DStream API中公开。但是你可以很容易地使用transform来实现这一点。这带来了非常强大的可能性。例如，可以通过将输入数据流与预先计算的垃圾信息(也可能是使用Spark生成的)结合起来进行实时数据清理
+updateStateByKey:返回一个新的“state”DStream，其中每个Key的状态通过将给定的函数应用于Key的前一个状态和Key的新值来更新。这可以用于维护每个Key的任意状态数据。要使用它，您需要执行两个步骤:(1).定义状态——状态可以是任意数据类型;(2).定义状态更新函数——用函数指定如何使用输入流中的前一个状态和新值更新状态。
+------------------- transform算子 window操作 ----------------------
+window:返回一个新的DStream，它是基于源DStream的窗口批次计算的。
+countByWindow:返回流中元素的滑动窗口计数。
+reduceByWindow:返回一个新的单元素流，该流是使用func在滑动间隔上聚合流中的元素创建的。这个函数应该是结合律和交换律的，这样才能并行地正确计算。
+reduceByKeyAndWindow:当对(K, V)对的DStream调用时，返回一个新的(K, V)对的DStream，其中每个Key的值使用给定的reduce函数func在滑动窗口中分批聚合。注意:默认情况下，这将使用Spark的默认并行任务数量(本地模式为2，在集群模式下，该数量由config属性Spark .default.parallelism决定)来进行分组。您可以传递一个可选的numTasks参数来设置不同数量的任务。
+countByKeyAndWindow:当对(K, V)对的DStream调用时，返回一个新的(K, Long)对的DStream，其中每个Key的值是它在滑动窗口中的频率。与reduceByKeyAndWindow类似，reduce任务的数量可以通过一个可选参数进行配置。
+-------------------- Output算子 输出操作------------------
+print:在运行流应用程序的驱动程序节点上打印DStream中每批数据的前10个元素。这对于开发和调试非常有用。这在Python API中称为pprint()。
+saveAsTextFiles:将此DStream的内容保存为文本文件。每个批处理间隔的文件名是根据前缀和后缀生成的:“prefix- time_in_ms [.suffix]”。
+saveAsObjectFiles:将此DStream的内容保存为序列化Java对象的sequencefile。每个批处理间隔的文件名是根据前缀和后缀生成的:“prefix- time_in_ms [.suffix]”。这在Python API中是不可用的。
+saveAsHadoopFiles:将这个DStream的内容保存为Hadoop文件。每个批处理间隔的文件名是根据前缀和后缀生成的:“prefix- time_in_ms [.suffix]”。这在Python API中是不可用的。
+foreachRDD:对流生成的每个RDD应用函数func的最通用输出操作符。这个函数应该将每个RDD中的数据推送到外部系统，例如将RDD保存到文件中，或者通过网络将其写入数据库。请注意，函数func是在运行流应用程序的驱动程序进程中执行的，其中通常会有RDD操作，这将强制流RDDs的计算。在func中创建远程连接时可以使用foreachPartition 替换foreach操作以降低系统的总体吞吐量。
+
+
+
+
+

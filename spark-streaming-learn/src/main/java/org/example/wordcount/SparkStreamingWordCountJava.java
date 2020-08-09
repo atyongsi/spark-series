@@ -23,7 +23,7 @@ public class SparkStreamingWordCountJava {
         JavaReceiverInputDStream<String> datas = jsc.socketTextStream("localhost", 9999);
 
         //切分数据，统计数量
-        JavaPairDStream<String, Integer> result = datas.flatMap( x-> Arrays.asList(x.split(" ")).iterator())
+        JavaPairDStream<String, Integer> result = datas.flatMap(x -> Arrays.asList(x.split(" ")).iterator())
                 .mapToPair(word -> new Tuple2<>(word, 1))
                 .reduceByKey((x1, x2) -> (x1 + x2));
 
