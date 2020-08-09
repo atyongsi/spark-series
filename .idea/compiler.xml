@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="spark-streaming-learn" />
+        <module name="structured-streaming-learn" />
       </profile>
     </annotationProcessing>
   </component>
