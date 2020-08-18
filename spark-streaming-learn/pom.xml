@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>spark-streaming-learn</artifactId>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming -->
         <dependency>
@@ -25,6 +26,15 @@
             <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
             <version>2.4.4</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.11</artifactId>
+            <version>2.4.4</version>
+        </dependency>
+
+
 
 
     </dependencies>

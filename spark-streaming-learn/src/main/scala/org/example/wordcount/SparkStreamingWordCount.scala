@@ -24,7 +24,6 @@ object SparkStreamingWordCount {
 
     ssc.start() //开始计算
     ssc.awaitTermination() //等待计算终止
-
   }
 
 }
