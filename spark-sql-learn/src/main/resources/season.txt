@@ -1,0 +1,4 @@
+2 summer 0.02
+4 winter 0.01
+1 spring 0.03
+3 autumn 0.04
